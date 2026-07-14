@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@config "../tailwind.config.js";
+
+
+    .skeleton {
+      @apply animate-pulse bg-brand-gray;
+    }
+    
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(5px);
+    }
+    
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    .progress-ring__circle {
+      transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+    
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Tab active state styles */
+    .tab-active {
+      @apply text-white border-brand-red;
+    }
+    .tab-inactive {
+      @apply text-gray-500 border-transparent hover:text-gray-300;
+    }
