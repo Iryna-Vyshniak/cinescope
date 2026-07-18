@@ -1,4 +1,6 @@
 import { DOM } from './utils.js';
+import avatarImg from '../../assets/avatar.png';
+import movieImg from '../../assets/movie.png';
 
 export const UIEngine = {
 
@@ -95,12 +97,12 @@ export const UIEngine = {
       if (isActor) {
         const name = this._safe(item.name, 'Unknown');
         const role = this._safe(item.role, 'Artist');
-        const img  = this._safe(item.img, '/src/assets/avatar.png');
+        const img  = this._safe(item.img, avatarImg);
 
         li.className = 'swiper-slide cast-card fade-in-up';
         li.style.animationDelay = `${index * 40}ms`;
         li.innerHTML = `
-          <img src="${img}" onerror="this.onerror=null; this.src='/src/assets/avatar.png';" class="w-16 h-16 rounded-full object-cover border-2 border-white/10 shrink-0" alt="${name}" loading="lazy" decoding="async" width="64" height="64">
+          <img src="${img}" onerror="this.onerror=null; this.src='${avatarImg}';" class="w-16 h-16 rounded-full object-cover border-2 border-white/10 shrink-0" alt="${name}" loading="lazy" decoding="async" width="64" height="64">
           <p class="text-xs font-black text-white w-full truncate leading-tight">${name}</p>
           <p class="text-[10px] text-[#737373] w-full truncate">${role}</p>
         `;
@@ -110,7 +112,7 @@ export const UIEngine = {
         const year   = this._safe(item.year   || item.Year);
         const poster = this._safe(item.poster  || item.Poster);
         const id     = this._safe(item.id      || item.imdbID);
-        const validPoster = (poster && poster !== 'N/A') ? poster : '/src/assets/movie.png';
+        const validPoster = (poster && poster !== 'N/A') ? poster : movieImg;
         const ratingNum = parseFloat(rating) || 0;
         const pct = Math.round((ratingNum / 10) * 100);
 
@@ -120,7 +122,7 @@ export const UIEngine = {
 
         li.innerHTML = `
           <div class="aspect-2/3 relative overflow-hidden shrink-0">
-            <img src="${validPoster}" onerror="this.onerror=null; this.src='/src/assets/movie.png';" class="w-full h-full object-cover" alt="Movie poster: ${title}" loading="lazy" decoding="async">
+            <img src="${validPoster}" onerror="this.onerror=null; this.src='${movieImg}';" class="w-full h-full object-cover" alt="Movie poster: ${title}" loading="lazy" decoding="async">
           </div>
           <div class="flex flex-col flex-1 gap-2 pt-3 pb-2 px-3">
             <h4 class="font-extrabold text-sm text-white leading-tight truncate">${title}</h4>

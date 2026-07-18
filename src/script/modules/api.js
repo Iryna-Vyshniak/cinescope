@@ -1,4 +1,7 @@
 import { State } from './state.js';
+import avatarImg from '../../assets/avatar.png';
+import movieImg from '../../assets/movie.png';
+import noPosterImg from '../../assets/no-poster.jpg';
 
 export const APIService = {
   async query(url, signal = null) {
@@ -31,7 +34,7 @@ export const APIService = {
       id: p.id,
       name: p.name,
       role: p.known_for_department || "Actor",
-      img: p.profile_path ? `https://image.tmdb.org/t/p/w185${p.profile_path}` : '/src/assets/avatar.png'
+      img: p.profile_path ? `https://image.tmdb.org/t/p/w185${p.profile_path}` : avatarImg
     }));
   },
 
@@ -73,7 +76,7 @@ export const APIService = {
         Actors: data.credits?.cast?.slice(0, 10).map(c => ({
           name: c.name,
           role: c.character,
-          img: c.profile_path ? `https://image.tmdb.org/t/p/w185${c.profile_path}` : '/src/assets/avatar.png'
+          img: c.profile_path ? `https://image.tmdb.org/t/p/w185${c.profile_path}` : avatarImg
         })) || [],
         Plot: data.overview || 'N/A',
         Language: data.spoken_languages?.map(l => l.english_name).join(', ') || 'N/A',
@@ -94,8 +97,8 @@ export const APIService = {
       rating: (m.vote_average || 0).toFixed(1),
       plot: m.overview,
       type: 'movie',
-      poster: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : '/src/assets/movie.png',
-      backdrop: m.backdrop_path ? `https://image.tmdb.org/t/p/original${m.backdrop_path}` : '/src/assets/no-poster.jpg'
+      poster: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : movieImg,
+      backdrop: m.backdrop_path ? `https://image.tmdb.org/t/p/original${m.backdrop_path}` : noPosterImg
     };
   }
 };

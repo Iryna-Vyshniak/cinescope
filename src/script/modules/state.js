@@ -1,3 +1,6 @@
+import heroPosterImg from '../../assets/hero-poster.jpg';
+import heroImg from '../../assets/hero.png';
+
 export const State = {
   omdbKey: '6e0a9317',
   tmdbKey: '80849c20aa63241eb028c4e7b7d0f3a8',
@@ -18,7 +21,7 @@ export const State = {
     rating: '7.5',
     type: 'Series',
     plot: 'The life and adventures of the Ingalls family in the nineteenth century American Midwest. Based on Laura Ingalls Wilder\'s beloved book series, this heartwarming classic follows a family making their way on the frontier.',
-    backdrop: '/src/assets/hero-poster.jpg',
-    poster: '/src/assets/hero.png'
+    backdrop: heroPosterImg,
+    poster: heroImg
   },
 };

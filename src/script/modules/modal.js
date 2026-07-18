@@ -2,6 +2,8 @@ import { State } from './state.js';
 import { APIService } from './api.js';
 import { FavoritesManager } from './favorites.js';
 import { DOM, Announcer } from './utils.js';
+import avatarImg from '../../assets/avatar.png';
+import noPosterImg from '../../assets/no-poster.jpg';
 
 export const ModalController = {
   dialog: null,
@@ -54,7 +56,7 @@ export const ModalController = {
         const data = await APIService.getDetails(id);
         this._currentData = data;
 
-        const poster = this._safe(data.Poster) || this._safe(data.poster) || '/src/assets/no-poster.jpg';
+        const poster = this._safe(data.Poster) || this._safe(data.poster) || noPosterImg;
 
         State.currentDetailsMovie = {
           id:     this._safe(data.imdbID || data.id),
@@ -195,13 +197,13 @@ export const ModalController = {
     if (directorStr && typeof directorStr === 'string') {
       directorStr.split(',').forEach(name => {
         const n = name.trim();
-        if (n) cast.push({ name: n, role: 'Director', img: '/src/assets/avatar.png' });
+        if (n) cast.push({ name: n, role: 'Director', img: avatarImg });
       });
     }
     if (writerStr && typeof writerStr === 'string') {
       writerStr.split(',').slice(0, 3).forEach(name => {
         const n = name.trim().replace(/\s*\(.*?\)/g, '');
-        if (n) cast.push({ name: n, role: 'Writer', img: '/src/assets/avatar.png' });
+        if (n) cast.push({ name: n, role: 'Writer', img: avatarImg });
       });
     }
 
@@ -212,7 +214,7 @@ export const ModalController = {
       if (actorStr && typeof actorStr === 'string') {
         actorStr.split(',').forEach(name => {
           const n = name.trim();
-          if (n) cast.push({ name: n, role: 'Actor', img: '/src/assets/avatar.png' });
+          if (n) cast.push({ name: n, role: 'Actor', img: avatarImg });
         });
       }
     }
@@ -226,7 +228,7 @@ export const ModalController = {
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 fade-in-up">
         ${cast.map(member => `
           <div class="cast-card w-full!">
-            <img src="${member.img}" class="w-14 h-14 rounded-full object-cover border border-white/10 shrink-0 mx-auto" alt="${member.name}">
+            <img src="${member.img}" onerror="this.onerror=null; this.src='${avatarImg}';" class="w-14 h-14 rounded-full object-cover border border-white/10 shrink-0 mx-auto" alt="${member.name}">
             <p class="text-xs font-black text-white text-center leading-tight mt-2">${member.name}</p>
             <p class="text-[10px] text-[#737373] text-center font-semibold uppercase tracking-wide">${member.role}</p>
           </div>`).join('')}
