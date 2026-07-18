@@ -1,13 +1,270 @@
-<!doctype html>
-<html lang="en" class="scroll-smooth bg-[#141414] text-[#E5E5E5] antialiased">
+<!DOCTYPE html>
+<html lang="en" class="bg-[#141414] text-[#E5E5E5] antialiased scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="CineScope - Explore movies, series, and episodes." />
-  <title>CineScope - Movie Database</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+
+  <meta name="description" content="CineScope: Search, explore and save trending movies and series. Your premium cinematic discovery platform.">
+  <meta name="theme-color" content="#E50914" />
+  <meta property="og:title" content="CineScope — Premium Movie Hub" />
+  <meta property="og:description" content="Explore, search, and save premium trending movies and series." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://cinescope-ivn.vercel.app/" />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200" />
+
+  <title>CineScope — Premium Movie Hub</title>
+
+  <link rel="preconnect" href="https://api.themoviedb.org" crossorigin>
+  <link rel="preconnect" href="https://www.omdbapi.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body class="bg-[#141414] text-white overflow-x-hidden min-h-screen flex flex-col selection:bg-brand-red selection:text-white">
+
+  <!-- ═══  Intro ═══ -->
+  <div id="introOverlay" class="intro-overlay" aria-hidden="true">
+    <span class="intro-logo">CineScope</span>
+  </div>
+
+  <!-- Skip link -->
+  <a href="#mainContent" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-brand-red text-white px-4 py-2 rounded-md z-200 font-bold focus:ring-2 focus:ring-white focus:outline-none">
+    Skip to Main Content
+  </a>
+
+  <div id="aria-live-announcer" class="sr-only" aria-live="polite" aria-atomic="true" role="status"></div>
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="fixed top-0 left-0 w-full h-[68px] flex items-center z-50 transition-all duration-300" id="mainNavbar" role="banner">
+    <div class="container mx-auto px-5 md:px-10 flex justify-between items-center w-full">
+      <a href="#" class="flex items-center gap-2 text-2xl font-black text-brand-red hover:text-brand-redHover transition-colors focus:ring-2 focus:ring-brand-red focus:outline-none rounded" aria-label="CineScope — go to homepage">
+        <svg class="w-8 h-8 fill-current shrink-0" width="32" height="32" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M18 4l2 3h-3l-2-3h-2l2 3h-3l-2-3H8l2 3H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
+        </svg>
+        <span>CineScope</span>
+      </a>
+
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <button id="userProfileBtn" class="flex items-center justify-center w-10 h-10 rounded-full bg-[#2B2B2B] hover:bg-[#3d3d3d] transition-colors focus:ring-2 focus:ring-brand-red focus:outline-none" aria-haspopup="true" aria-expanded="false" aria-controls="favoritesPopup" aria-label="My Collection — open saved movies">
+            <svg class="w-5 h-5 fill-current text-[#B3B3B3]" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+            <span id="favCountBadge" class="absolute -top-1 -right-1 bg-brand-red text-[10px] font-black text-white w-5 h-5 rounded-full flex items-center justify-center hidden" aria-hidden="true">0</span>
+          </button>
+
+          <div id="favoritesPopup" role="dialog" aria-label="My Collection" aria-modal="false" class="absolute right-0 mt-3 w-80 md:w-96 bg-[#181818]/97 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl p-4 hidden z-50">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-3">
+              <h2 class="font-black text-sm tracking-widest uppercase text-[#E5E5E5] flex items-center gap-2">
+                <svg class="w-4 h-4 text-brand-red fill-current" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                My Collection
+              </h2>
+              <span id="favPopupCount" class="text-xs bg-white/10 px-2.5 py-0.5 rounded-full text-[#B3B3B3] font-bold" aria-live="polite">0 titles</span>
+            </div>
+            <div id="favoritesList" class="max-h-64 overflow-y-auto flex flex-col gap-3 hide-scrollbar" role="list">
+              <p class="text-xs text-[#737373] text-center py-6">Your collection is empty. Use Details to save movies.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN ═══ -->
+  <main id="mainContent" class="flex-grow" tabindex="-1">
+
+    <!-- Hero -->
+    <section class="relative min-h-[88vh] flex items-center pt-28 pb-16 overflow-hidden bg-cover bg-center bg-no-repeat" id="heroSection" aria-label="Featured Movie Spotlight">
+      <div class="absolute inset-0 bg-gradient-to-r from-[#141414] via-[#141414]/70 to-transparent z-0" aria-hidden="true"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-[#141414]/30 z-0" aria-hidden="true"></div>
+
+      <div class="container mx-auto px-5 md:px-10 relative z-10 w-full">
+        <div class="max-w-2xl" id="heroContent" aria-live="polite" aria-atomic="true"></div>
+
+        <div class="mt-10 p-5 md:p-6 bg-[#161616]/90 backdrop-blur-3xl border border-white/10 rounded-2xl shadow-2xl max-w-3xl">
+          <form class="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] gap-3 items-end" id="searchForm" role="search" aria-label="Search for movies and series">
+            <div class="flex flex-col gap-1.5">
+              <label for="searchInput" class="text-[11px] font-bold text-[#B3B3B3] uppercase tracking-wider">Search Title</label>
+              <input type="search" id="searchInput" name="q" class="w-full h-11 px-4 bg-black/60 border border-white/10 rounded-lg text-white placeholder-[#737373] focus:border-brand-red focus:ring-2 focus:ring-brand-red/30 focus:outline-none transition-all text-sm" placeholder="Inception, Dune, Breaking Bad…" required aria-required="true" autocomplete="off" spellcheck="false">
+            </div>
+            <div class="flex flex-col gap-1.5 relative" id="customSelectWrapper">
+              <label id="typeSelectLabel" class="text-[11px] font-bold text-[#B3B3B3] uppercase tracking-wider">Format</label>
+              <input type="hidden" id="typeSelect" name="type" value="">
+              <button type="button" id="customSelectBtn" class="h-11 px-4 bg-[#181818] border border-white/10 rounded-lg text-white focus:border-brand-red focus:ring-2 focus:ring-brand-red/30 focus:outline-none cursor-pointer text-sm transition-all flex items-center justify-between gap-4" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="typeSelectLabel">
+                <span id="customSelectText">All</span>
+                <svg class="w-4 h-4 text-[#E5E5E5] pointer-events-none shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 10l5 5 5-5z"/></svg>
+              </button>
+              <ul id="customSelectList" class="absolute top-[calc(100%+6px)] left-0 w-full bg-[#181818] border border-white/10 rounded-lg shadow-2xl z-50 hidden flex-col overflow-hidden" role="listbox" aria-labelledby="typeSelectLabel">
+                <li class="px-4 py-3 text-sm font-semibold text-[#E5E5E5] hover:bg-brand-red hover:text-white cursor-pointer transition-colors" role="option" aria-selected="true" data-value="">All</li>
+                <li class="px-4 py-3 text-sm font-semibold text-[#E5E5E5] hover:bg-brand-red hover:text-white cursor-pointer transition-colors" role="option" aria-selected="false" data-value="movie">Movies</li>
+                <li class="px-4 py-3 text-sm font-semibold text-[#E5E5E5] hover:bg-brand-red hover:text-white cursor-pointer transition-colors" role="option" aria-selected="false" data-value="series">Series</li>
+              </ul>
+            </div>
+            <button type="submit" id="searchSubmitBtn" class="h-11 px-6 bg-brand-red hover:bg-brand-redHover active:scale-95 rounded-lg font-extrabold text-white transition-all focus:ring-2 focus:ring-white focus:outline-none whitespace-nowrap text-sm">
+              Search
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main content -->
+    <div class="container mx-auto px-5 md:px-10 pb-24" id="mainViewContainer">
+
+      <div id="searchReturnBox" class="hidden mt-8 mb-2">
+        <button id="backToDashboardBtn" class="inline-flex items-center gap-2 px-4 py-2 bg-[#2B2B2B] border border-white/10 hover:bg-brand-red hover:border-brand-red rounded-lg text-xs font-bold focus:ring-2 focus:ring-brand-red focus:outline-none transition-all">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          Back to Dashboard
+        </button>
+      </div>
+
+      <h2 class="flex items-center gap-3 mt-10 mb-5" id="dashboardHeadline">
+        <div class="shimmer-bg h-8 w-60 rounded-md" aria-hidden="true"></div>
+      </h2>
+
+      <!-- Carousels -->
+      <div id="carouselsContentPanel" class="space-y-14">
+        <!-- Trending -->
+        <section aria-labelledby="trendingHeading">
+          <h3 id="trendingHeading" class="sr-only">Trending This Week</h3>
+          <div class="relative group">
+            <button class="swiper-button-prev absolute -left-4 top-1/2 -translate-y-1/2 !w-10 !h-10 !text-white !bg-[#141414] !border !border-white/10 !rounded-full !shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:!bg-brand-red hover:!border-brand-red z-20 after:!content-['']" id="trendingPrevBtn" aria-label="Scroll trending left" aria-controls="trendingSwiper">
+              <svg class="w-4 h-4 fill-current mx-auto" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            </button>
+            <div class="swiper trending-swiper !px-1 !py-3" id="trendingSwiper" role="region" aria-label="Trending movies carousel">
+              <ul class="swiper-wrapper" id="trendingGridTrack" role="list"></ul>
+            </div>
+            <button class="swiper-button-next absolute -right-4 top-1/2 -translate-y-1/2 !w-10 !h-10 !text-white !bg-[#141414] !border !border-white/10 !rounded-full !shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:!bg-brand-red hover:!border-brand-red z-20 after:!content-['']" id="trendingNextBtn" aria-label="Scroll trending right" aria-controls="trendingSwiper">
+              <svg class="w-4 h-4 fill-current mx-auto" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </button>
+          </div>
+        </section>
+
+        <!-- Recommended -->
+        <section aria-labelledby="recsHeading">
+          <h3 id="recsHeading" class="mb-4">
+            <div class="shimmer-bg h-6 w-52 rounded-md" aria-hidden="true"></div>
+          </h3>
+          <div class="relative group">
+            <button class="swiper-button-prev absolute -left-4 top-1/2 -translate-y-1/2 !w-10 !h-10 !text-white !bg-[#141414] !border !border-white/10 !rounded-full !shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:!bg-brand-red hover:!border-brand-red z-20 after:!content-['']" id="recsPrevBtn" aria-label="Scroll recommended left" aria-controls="recsSwiper">
+              <svg class="w-4 h-4 fill-current mx-auto" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            </button>
+            <div class="swiper recs-swiper !px-1 !py-3" id="recsSwiper" role="region" aria-label="Recommended movies carousel">
+              <ul class="swiper-wrapper" id="recommendedGridTrack" role="list"></ul>
+            </div>
+            <button class="swiper-button-next absolute -right-4 top-1/2 -translate-y-1/2 !w-10 !h-10 !text-white !bg-[#141414] !border !border-white/10 !rounded-full !shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:!bg-brand-red hover:!border-brand-red z-20 after:!content-['']" id="recsNextBtn" aria-label="Scroll recommended right" aria-controls="recsSwiper">
+              <svg class="w-4 h-4 fill-current mx-auto" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </button>
+          </div>
+        </section>
+
+        <!-- Actors -->
+        <section aria-labelledby="actorsHeading">
+          <h3 id="actorsHeading" class="mb-4">
+            <div class="shimmer-bg h-6 w-44 rounded-md" aria-hidden="true"></div>
+          </h3>
+          <div class="relative group">
+            <button class="swiper-button-prev absolute -left-4 top-1/2 -translate-y-1/2 !w-10 !h-10 !text-white !bg-[#141414] !border !border-white/10 !rounded-full !shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:!bg-brand-red hover:!border-brand-red z-20 after:!content-['']" id="actorsPrevBtn" aria-label="Scroll actors left" aria-controls="actorsSwiper">
+              <svg class="w-4 h-4 fill-current mx-auto" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            </button>
+            <div class="swiper actors-swiper !px-1 !py-3" id="actorsSwiper" role="region" aria-label="Featured actors carousel">
+              <ul class="swiper-wrapper" id="actorsGridTrack" role="list"></ul>
+            </div>
+            <button class="swiper-button-next absolute -right-4 top-1/2 -translate-y-1/2 !w-10 !h-10 !text-white !bg-[#141414] !border !border-white/10 !rounded-full !shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:!bg-brand-red hover:!border-brand-red z-20 after:!content-['']" id="actorsNextBtn" aria-label="Scroll actors right" aria-controls="actorsSwiper">
+              <svg class="w-4 h-4 fill-current mx-auto" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Search results -->
+      <section id="searchResultsViewport" class="hidden" aria-label="Search Results" aria-live="polite">
+        <ul class="cards-grid" id="searchResultsGrid" role="list" aria-label="Movie search results"></ul>
+        <nav aria-label="Search results pagination" class="flex flex-wrap justify-center items-center gap-2 mt-12" id="paginationController"></nav>
+      </section>
+    </div>
+  </main>
+
+  <!-- ═══ MODAL   ═══ -->
+  <dialog class="fixed inset-0 m-auto bg-[#141414] border border-white/10 rounded-2xl max-w-4xl w-[92vw] h-[85vh] overflow-hidden shadow-2xl text-white p-0" id="detailsModal" aria-labelledby="modalTitle" aria-modal="true">
+    <div class="flex flex-col h-full">
+      <!-- Close -->
+      <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/80 border border-white/10 z-30 flex items-center justify-center hover:bg-brand-red hover:border-brand-red focus:ring-2 focus:ring-brand-red focus:outline-none transition-all" id="modalCloseBtn" aria-label="Close details panel">
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+
+      <!-- Tabs -->
+      <nav class="flex border-b border-white/10 bg-[#181818] shrink-0" role="tablist" aria-label="Movie detail sections">
+        <button class="flex-1 py-4 text-xs font-black uppercase tracking-widest tab-active transition-all focus:outline-none focus:ring-inset focus:ring-2 focus:ring-brand-red" data-tab="tab-overview" id="tab-overview-btn" role="tab" aria-selected="true" aria-controls="panel-overview">Overview</button>
+        <button class="flex-1 py-4 text-xs font-black uppercase tracking-widest tab-inactive transition-all focus:outline-none focus:ring-inset focus:ring-2 focus:ring-brand-red" data-tab="tab-cast" id="tab-cast-btn" role="tab" aria-selected="false" aria-controls="panel-cast">Cast &amp; Crew</button>
+        <button class="flex-1 py-4 text-xs font-black uppercase tracking-widest tab-inactive transition-all focus:outline-none focus:ring-inset focus:ring-2 focus:ring-brand-red" data-tab="tab-details" id="tab-details-btn" role="tab" aria-selected="false" aria-controls="panel-details">Details</button>
+      </nav>
+
+      <div class="flex-1 overflow-y-auto hide-scrollbar">
+        <!-- Overview -->
+        <div class="p-5 md:p-8 tab-panel block" id="panel-overview" role="tabpanel" tabindex="0" aria-labelledby="tab-overview-btn">
+          <div id="modalContentInjection"></div>
+          <div class="mt-10" id="modalRecsSection">
+            <h3 class="text-base font-extrabold text-[#E5E5E5] mb-4 flex items-center gap-2">
+              <span class="inline-block w-1 h-5 bg-brand-red rounded-sm"></span>
+              More Like This
+            </h3>
+            <ul class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="modalRecsGrid" role="list"></ul>
+          </div>
+        </div>
+
+        <!-- Cast & Crew -->
+        <div class="p-5 md:p-8 tab-panel hidden" id="panel-cast" role="tabpanel" tabindex="0" aria-labelledby="tab-cast-btn">
+          <div id="modalCastContent"></div>
+        </div>
+
+        <!-- Details -->
+        <div class="p-5 md:p-8 tab-panel hidden" id="panel-details" role="tabpanel" tabindex="0" aria-labelledby="tab-details-btn">
+          <div id="modalDetailsContent"></div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="bg-[#141414] py-8 md:py-16 text-[#737373] text-[13px] mt-auto" role="contentinfo">
+    <div class="container mx-auto px-5 md:px-10 max-w-5xl">
+      <div class="mb-8">
+        <a href="#" class="hover:underline text-[15px]">Questions? Contact us.</a>
+      </div>
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-2 mb-8">
+        <a href="#" class="hover:underline">FAQ</a>
+        <a href="#" class="hover:underline">Help Center</a>
+        <a href="#" class="hover:underline">Account</a>
+        <a href="#" class="hover:underline">Media Center</a>
+        <a href="#" class="hover:underline">Investor Relations</a>
+        <a href="#" class="hover:underline">Jobs</a>
+        <a href="#" class="hover:underline">Ways to Watch</a>
+        <a href="#" class="hover:underline">Terms of Use</a>
+        <a href="#" class="hover:underline">Privacy</a>
+        <a href="#" class="hover:underline">Cookie Preferences</a>
+        <a href="#" class="hover:underline">Corporate Information</a>
+        <a href="#" class="hover:underline">Contact Us</a>
+        <a href="#" class="hover:underline">Speed Test</a>
+        <a href="#" class="hover:underline">Legal Notices</a>
+        <a href="#" class="hover:underline">Only on CineScope</a>
+      </div>
+
+      <div class="mb-6">
+        <button class="border border-[#737373] text-[#737373] px-3 py-1.5 text-xs hover:text-[#E5E5E5] transition-colors bg-transparent cursor-pointer rounded-sm">
+          Service Code
+        </button>
+      </div>
+
+      <p class="text-xs">&copy; 2026 CineScope Inc. — Data provided by OMDb & TMDB.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/script/main.js"></script>
+</body>
 </html>
